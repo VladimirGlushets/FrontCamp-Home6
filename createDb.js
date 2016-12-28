@@ -14,6 +14,7 @@ async.series([
     open,
     dropDatabase,
     createUsers,
+    createTags,
     close
 ], function(err, results) {
     if (err) {
@@ -36,23 +37,30 @@ function createUsers(callback) {
     async.parallel([
         function(callback) {
             var vasya = new User({
-                username: 'Вася',
+                username: 'Vasya',
                 email: 'vasya@mail.ru',
                 password: 'supervasya'
-            });
-
-            var tag = new Tag({
-                value: 'tag1'
             });
 
             var vasyaArticle = new Article({
                 title: 'Title',
                 content: 'Content',
-                tags: [tag.value],
-                
+                comments: [],
+                user: {
+                  id: vasya._id,
+                  name: vasya.username
+                }
             });
 
+            var tag = new Tag({
+                value: 'tag1',
+                articles_ids: [vasyaArticle._id]
+            });
 
+            vasyaArticle.tags = [tag.value];
+
+            vasyaArticle.save();
+            tag.save();
             vasya.save(function(err) {
                 if (err) {
                     throw err;
@@ -62,10 +70,22 @@ function createUsers(callback) {
         },
         function(callback) {
             var petya = new User({
-                username: 'Петя',
+                username: 'Petya',
                 email: 'petya@mail.ru',
                 password: '123'
             });
+            var petyaArticle = new Article({
+                title: 'petya Title',
+                content: 'petya Content',
+                tags: [],
+                comments: [],
+                user: {
+                  id: petya._id,
+                  name: petya.username
+                }
+            });
+
+            petyaArticle.save();
             petya.save(function(err) {
                 callback(err, petya);
             });
@@ -81,6 +101,44 @@ function createUsers(callback) {
             });
         }
     ], callback);
+}
+
+function createTags(callback){
+  async.parallel([
+      function(callback) {
+          var tag = new Tag({
+              value: 'tag2'
+          });
+          tag.save(function(err) {
+              if (err) {
+                  throw err;
+              }
+              callback(err, tag);
+          });
+      },
+      function(callback) {
+        var tag = new Tag({
+            value: 'tag3'
+        });
+        tag.save(function(err) {
+            if (err) {
+                throw err;
+            }
+            callback(err, tag);
+        });
+      },
+      function(callback) {
+        var tag = new Tag({
+            value: 'tag4'
+        });
+        tag.save(function(err) {
+            if (err) {
+                throw err;
+            }
+            callback(err, tag);
+        });
+      }
+  ], callback);
 }
 
 function close(callback) {

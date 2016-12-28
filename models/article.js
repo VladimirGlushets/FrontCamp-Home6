@@ -16,25 +16,31 @@ var schema = new Schema({
     },
 
     comments: [{
-      content: String,
-      createdDate: {
-        type: Date,
-        default: Date.now
-      },
-      user:{
-        id: String,
-        name: String
-      }
+        content: String,
+        createdDate: {
+            type: Date,
+            default: Date.now
+        },
+        user: {
+            id: String,
+            name: String
+        }
     }],
 
     createdDate: {
-      type: Date,
-      default: Date.now
+        type: Date,
+        default: Date.now
     },
 
-    user:{
-      id: String,
-      name: String
+    user: {
+        id: {
+            type: String,
+            required: true
+        },
+        name: {
+          type: String,
+          required: true
+        }
     }
 
 });

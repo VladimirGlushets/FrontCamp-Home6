@@ -6,7 +6,7 @@ var schema = new Schema({
         type: String
     },
 
-    Articles_ids: {
+    articles_ids: {
         type: Array,
         default: []
     }
