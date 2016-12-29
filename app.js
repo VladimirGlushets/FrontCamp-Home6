@@ -4,8 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var passport = require('passport');
+
+var mongoose = require('./libs/mongoose');
+var MongoStore = require('connect-mongo')(session);
+var config = require('./config');
 
 var articles = require('./routes/articles');
+var apiArticles = require('./routes/api/articlesApi');
 var users = require('./routes/users');
 
 var app = express();
@@ -25,25 +32,42 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// auth settings
+require('./authentication').init(app);
+app.use(session({
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection
+    }),
+    secret: config.get('session:secret'),
+    key: config.get('session:key')
+    // resave: false,
+    // saveUninitialized: false
+}));
+
+// auth settings
+app.use(passport.initialize())
+app.use(passport.session())
+
 app.use('/', articles);
+app.use('/api/articles', apiArticles);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;

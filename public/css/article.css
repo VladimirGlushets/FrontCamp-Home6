@@ -12,6 +12,24 @@
     background-color: #ffc183;
 }
 
+.content-container .create-btn {
+    cursor: pointer;
+    border: solid 1px orange;
+    font-weight: bold;
+    padding: 8px;
+    text-align: center;
+    margin: 15px;
+    width: 100px;
+}
+
+.content-container .create-btn:hover {
+    background-color: #ffc183;
+}
+
+.content-container .create-link {
+  text-decoration: none;
+}
+
 .article-container {
     margin-top: 5px;
     background-color: white;

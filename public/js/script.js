@@ -1,6 +1,6 @@
 var deleteBtns = document.getElementsByClassName("delete-article");
 
-if (deleteBtns) {
+if (deleteBtns && deleteBtns.length > 0) {
     for (var i = 0; i < deleteBtns.length; i++) {
         deleteBtns[i].addEventListener("click", function(e) {
             e.preventDefault();
@@ -15,8 +15,7 @@ if (deleteBtns) {
                 }
             }).then(
                 function(response) {
-                    console.log(response);
-                    location.reload();
+                  window.location = response.data.redirectUrl;                    
                 }
             );
 

@@ -1,16 +1,5 @@
 var ArticleService = require('../services/articleService');
-
-var getDetailsUrl = function(protocol, host, articleId) {
-    return protocol + '://' + host + '/articles/' + articleId;
-};
-
-var getDeleteUrl = function(protocol, host) {
-    return protocol + '://' + host + '/articles/delete';
-};
-
-var getUpdateUrl = function(protocol, host) {
-    return protocol + '://' + host + '/articles/update';
-};
+var UrlsHelper = require('../helpers/urlsHelper');
 
 class ArticleController {
     constructor(req, res, next) {
@@ -21,24 +10,20 @@ class ArticleController {
     }
 
     index() {
-        var currentRes = this.res;
-        var currentReq = this.req;
-        var currentRenderView = this.renderView;
-
-        this.articleService.getAllArticles().then(
-            function(articles) {
+        this.articleService.getAllArticles().then((articles) => {
 
                 for (var i = 0; i < articles.length; i++) {
-                    articles[i].detailArticleUrl = getDetailsUrl(currentReq.protocol, currentReq.headers.host, articles[i]._id);
-                    articles[i].deleteArticleUrl = getDeleteUrl(currentReq.protocol, currentReq.headers.host);
-                    articles[i].updateArticleUrl = getUpdateUrl(currentReq.protocol, currentReq.headers.host);
+                    articles[i].detailArticleUrl = UrlsHelper.getDetailsUrl(this.req.protocol, this.req.headers.host, articles[i]._id);
+                    articles[i].deleteArticleUrl = UrlsHelper.getDeleteUrl(this.req.protocol, this.req.headers.host);
+                    articles[i].updateArticleUrl = UrlsHelper.getUpdateViewUrl(this.req.protocol, this.req.headers.host, articles[i]._id);
                 }
 
                 var renderData = {
+                    createNewArticleUrl: UrlsHelper.getCreateUrl(this.req.protocol, this.req.headers.host),
                     articles: articles
                 }
 
-                currentRenderView(currentRes, 'articles', renderData);
+                this.renderView(this.res, 'articles', renderData);
             },
             function(err) {
                 throw err;
@@ -47,18 +32,15 @@ class ArticleController {
     }
 
     details(articleId) {
-        var currentRes = this.res;
-        var currentReq = this.req;
-        var currentRenderView = this.renderView;
 
-        this.articleService.getArticleById(articleId).then(
-            function(article) {
-
+        this.articleService.getArticleById(articleId).then((article) => {
                 var renderData = {
-                    article: article
+                    article: article,
+                    deleteArticleUrl: UrlsHelper.getDeleteUrl(this.req.protocol, this.req.headers.host),
+                    updateArticleUrl: UrlsHelper.getUpdateViewUrl(this.req.protocol, this.req.headers.host, article._id)
                 }
 
-                currentRenderView(currentRes, 'articleDetails', renderData);
+                this.renderView(this.res, 'articleDetails', renderData);
             },
             function(err) {
                 throw err;
@@ -67,16 +49,64 @@ class ArticleController {
     }
 
     delete(articleId) {
-        var currentRes = this.res;        
-
-        this.articleService.deleteArticle(articleId).then(
-            function(article) {
-                currentRes.send(article);
+        this.articleService.deleteArticle(articleId).then((result) => {
+                this.res.send({
+                    result: result,
+                    redirectUrl: UrlsHelper.getHomeUrl(this.req.protocol, this.req.headers.host)
+                });
             },
             function(err) {
                 throw err;
             }
         );
+    }
+
+    createArticleView(articleId) {
+        var renderData = {};
+
+        if (articleId) {
+            this.articleService.getArticleById(articleId).then((article) => {
+                renderData.actionUrl = UrlsHelper.getUpdatePutUrl(this.req.protocol, this.req.headers.host);
+                renderData.articleId = article._id;
+                renderData.title = article.title;
+                renderData.content = article.content;
+                renderData.userId = article.user.id;
+                renderData.userName = article.user.name;
+
+                this.renderView(this.res, 'createUpdateArticle', renderData);
+            });
+
+        } else {
+            renderData.actionUrl = UrlsHelper.getCreateUrl(this.req.protocol, this.req.headers.host);
+            renderData.articleId = '';
+            renderData.title = '';
+            renderData.content = '';
+            renderData.userId = '5863ccfceabef44c38c6d27b';
+            renderData.userName = 'Vasya';
+
+            this.renderView(this.res, 'createUpdateArticle', renderData);
+        }
+    }
+
+    createArticleAction(model) {
+
+        this.articleService.createArticle(model).then((article) => {
+                this.res.statusCode = 302;
+                this.res.setHeader("Location", "/");
+                this.res.end();
+            },
+            function(err) {
+                throw err;
+            }
+        );
+    }
+
+    update(model) {
+        this.articleService.updateArticle(model).then((result) => {
+            this.res.statusCode = 302;
+            this.res.setHeader("Location", "/");
+            this.res.end();
+        });
     }
 
     renderView(res, templateName, data) {
