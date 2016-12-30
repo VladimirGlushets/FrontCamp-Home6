@@ -1,21 +1,36 @@
 var express = require('express');
 var router = express.Router();
 var ArticleController = require('../controllers/articleController');
+var UserController = require('../controllers/userController');
 var passport = require('passport');
+var passportModule = require('../authentication');
 
 /* GET home page. */
 router.get('/',
-    passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/articles/create'
-    }),
     function(req, res, next) {
         var controller = new ArticleController(req, res, next);
         controller.index();
     });
 
+router.get('/login', function(req, res, next) {
+    var controller = new UserController(req, res, next);
+    controller.login();
+});
+
+router.post('/login',
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login'
+    })
+);
+
+router.get('/logout', function(req, res, next){
+  var controller = new UserController(req, res, next);
+  controller.logout();
+});
+
 /* GET create new article. */
-router.get('/articles/create', function(req, res, next) {
+router.get('/articles/create', passportModule.middleware(),  function(req, res, next) {
     var controller = new ArticleController(req, res, next);
     controller.createArticleView();
 })

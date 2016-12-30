@@ -1,10 +1,10 @@
 function authenticationMiddleware () {
-  return function (req, res, next) {
+  return function (req, res, next) {    
     if (req.isAuthenticated()) {
-      return next()
+      return next();
     }
-    res.redirect('/')
+    res.redirect('/login');
   }
 }
 
-module.exports = authenticationMiddleware
+module.exports = authenticationMiddleware;

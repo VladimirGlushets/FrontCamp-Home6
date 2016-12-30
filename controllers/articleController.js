@@ -1,8 +1,11 @@
+var BaseController = require('./baseController');
 var ArticleService = require('../services/articleService');
 var UrlsHelper = require('../helpers/urlsHelper');
 
-class ArticleController {
+class ArticleController extends BaseController  {
     constructor(req, res, next) {
+        super(req, res);
+
         this.req = req;
         this.res = res;
         this.next = next;
@@ -81,8 +84,8 @@ class ArticleController {
             renderData.articleId = '';
             renderData.title = '';
             renderData.content = '';
-            renderData.userId = '5863ccfceabef44c38c6d27b';
-            renderData.userName = 'Vasya';
+            renderData.userId = this.req.user._id;
+            renderData.userName = this.req.user.username;
 
             this.renderView(this.res, 'createUpdateArticle', renderData);
         }

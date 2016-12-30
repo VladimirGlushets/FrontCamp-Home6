@@ -6,7 +6,12 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
         <li>
-            <a href="/login">Войти</a>
+            <% if (user) { %>
+                <a href="/logout">Выйти</a>
+                <div>Welcome, <%= user.username %></div>
+                <% } else { %>
+                    <a href="/login">Войти</a>
+                    <% } %>
         </li>
     </ul>
 </nav>
