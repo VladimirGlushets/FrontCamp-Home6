@@ -28,7 +28,6 @@ class UserController extends BaseController {
 
     createAction(model) {
         this.userService.create(model).then((result) => {
-          console.log(result);
             this.res.statusCode = 302;
             this.res.setHeader("Location", "/login");
             this.res.end();

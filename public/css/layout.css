@@ -10,6 +10,7 @@ body {
 .header-container .wrapper {
     width: 50%;
     margin: auto;
+    position: relative;
 }
 
 .header-container .header-content {
@@ -24,6 +25,16 @@ body {
 
 .logo a {
     text-decoration: none;
+}
+
+.welcome-user {
+    float: right;
+    font-size: 20px;
+    float: right;
+    margin-top: auto;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 .content-container {

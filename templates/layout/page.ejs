@@ -8,6 +8,7 @@
 
     <link rel='stylesheet' href='/css/layout.css' />
     <link rel='stylesheet' href='/css/article.css' />
+    <link rel='stylesheet' href='/css/navbar.css' />
 
 </head>
 
@@ -18,13 +19,21 @@
                 <div class="logo">
                     <a href="https://nodejs.org/">Powered by NodeJs</a>
                 </div>
-                <%- partial('../partials/topNavigation') %>
             </div>
+
+            <% if (user) { %>
+                <div class="welcome-user">Welcome, <%= user.username %> </div>
+                <% } %>
+
         </div>
     </div>
 
+    <div class="content-container">
+        <%- partial('../partials/topNavigation') %>
+    </div>
+
     <div id="content" class="content-container">
-      <%-body -%>
+        <%-body -%>
     </div>
     <!-- <h1><%= blocks.title %></h1> -->
 

@@ -1,16 +1,15 @@
 <nav class="navbar" role="navigation">
     <ul class="nav navbar-nav">
         <li>
-            <a href="/">Главная</a>
+            <a href="/">Home</a>
         </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
         <li>
             <% if (user) { %>
-                <a href="/logout">Выйти</a>
-                <div>Welcome, <%= user.username %></div>
+                <a href="/logout">Log Out</a>
                 <% } else { %>
-                    <a href="/login">Войти</a>
+                    <a href="/login">Log In</a>
                     <% } %>
         </li>
     </ul>
